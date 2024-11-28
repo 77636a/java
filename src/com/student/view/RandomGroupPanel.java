@@ -9,25 +9,36 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * 随机点名面板类
+ * 用于实现随机选择小组和学生的功能
+ * 包含小组评分、考勤记录等功能
+ */
 public class RandomGroupPanel extends JPanel {
-    private JLabel groupLabel;
-    private JTextField groupField;
-    private JLabel studentLabel;
-    private JTextField studentField;
-    private JLabel scoreLabel;
-    private JTextField scoreField;
-    private JLabel photoLabel;
-    private JButton randomGroupBtn;
-    private JButton randomStudentBtn;
-    private JButton scoreBtn;
-    private JButton absenceButton;
-    private JButton leaveButton;
-    private javax.swing.Timer timer;
-    private Random random = new Random();
-    private List<String[]> groupList = new ArrayList<>();
-    private List<String[]> groupStudentList = new ArrayList<>();
-    private boolean isRandomizing = false;
+    // 界面组件声明
+    private JLabel groupLabel;           // 小组名称标签
+    private JTextField groupField;       // 小组名称显示框
+    private JLabel studentLabel;         // 学生姓名标签
+    private JTextField studentField;     // 学生姓名显示框
+    private JLabel scoreLabel;           // 小组评分标签
+    private JTextField scoreField;       // 小组评分输入框
+    private JLabel photoLabel;           // 学生照片显示区域
+    private JButton randomGroupBtn;      // 随机小组按钮
+    private JButton randomStudentBtn;    // 随机学生按钮
+    private JButton scoreBtn;            // 评分按钮
+    private JButton absenceButton;       // 缺勤按钮
+    private JButton leaveButton;         // 请假按钮
 
+    // 功能相关成员变量
+    private Timer timer;                 // 随机效果定时器
+    private Random random = new Random(); // 随机数生成器
+    private List<String[]> groupList = new ArrayList<>();      // 小组列表
+    private List<String[]> groupStudentList = new ArrayList<>(); // 学生列表
+    private boolean isRandomizing = false;  // 随机状态标志
+
+    /**
+     * 构造方法：初始化随机点名面板的界面组件
+     */
     public RandomGroupPanel() {
         this.setLayout(null);
         this.setBorder(new TitledBorder(new EtchedBorder(), "随机小组点名"));
@@ -82,7 +93,7 @@ public class RandomGroupPanel extends JPanel {
         this.add(absenceButton);
         this.add(leaveButton);
 
-        // 初始化定时器
+        // 初始化定时器，用于实现随机效果
         timer = new Timer(50, e -> {
             if (groupList.isEmpty()) {
                 stopRandomizing();
@@ -93,7 +104,7 @@ public class RandomGroupPanel extends JPanel {
             loadGroupStudents(randomGroup[0]); // 加载该小组的学生
         });
 
-        // 随机小组按钮事件
+        // 随机小组按钮事件处理
         randomGroupBtn.addActionListener(e -> {
             if (!isRandomizing) {
                 startRandomizing();

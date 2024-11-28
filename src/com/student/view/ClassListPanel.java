@@ -1,5 +1,6 @@
 package com.student.view;
 
+// 导入必要的包
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
@@ -8,13 +9,23 @@ import java.awt.*;
 import java.io.File;
 import com.student.util.Constant;
 
+/**
+ * 班级列表面板类
+ * 用于显示、修改和删除班级信息
+ * 继承自JPanel，提供图形化界面
+ */
 public class ClassListPanel extends JPanel {
+    // 表格列头定义
     String[] headers = {"序号", "班级名称"};
-    JTable classTable;
-    JTextField txtName = new JTextField();
-    JButton btnEdit = new JButton("修改");
-    JButton btnDelete = new JButton("删除");
+    // 界面组件声明
+    JTable classTable;         // 班级列表表格
+    JTextField txtName;        // 班级名称输入框
+    JButton btnEdit;          // 修改按钮
+    JButton btnDelete;        // 删除按钮
 
+    /**
+     * 构造方法：初始化班级列表面板的界面组件
+     */
     public ClassListPanel() {
         this.setBorder(new TitledBorder(new EtchedBorder(), "班级列表"));
         this.setLayout(new BorderLayout());
@@ -41,6 +52,10 @@ public class ClassListPanel extends JPanel {
         btnPanel.add(btnDelete);
         this.add(btnPanel, BorderLayout.SOUTH);
 
+        /**
+         * 表格选择监听器
+         * 当选择表格行时，将班级名称显示在输入框中
+         */
         classTable.getSelectionModel().addListSelectionListener(e -> {
             int selectedRow = classTable.getSelectedRow();
             if (selectedRow >= 0) {
@@ -48,6 +63,10 @@ public class ClassListPanel extends JPanel {
             }
         });
 
+        /**
+         * 修改按钮点击事件处理
+         * 实现班级名称的修改功能
+         */
         btnEdit.addActionListener(e -> {
             int selectedRow = classTable.getSelectedRow();
             if (selectedRow < 0) {
@@ -71,6 +90,10 @@ public class ClassListPanel extends JPanel {
             }
         });
 
+        /**
+         * 删除按钮点击事件处理
+         * 实现班级的删除功能
+         */
         btnDelete.addActionListener(e -> {
             int selectedRow = classTable.getSelectedRow();
             if (selectedRow < 0) {
@@ -88,45 +111,55 @@ public class ClassListPanel extends JPanel {
         });
     }
 
+    /**
+     * 更新班级列表显示
+     * 读取指定目录下的所有文件夹，将其作为班级信息显示在表格中
+     */
     private void updateClassList() {
         File classDir = new File(Constant.FILE_PATH);
+        // 确保目录存在
         if (!classDir.exists() || !classDir.isDirectory()) {
             classDir.mkdirs();
             return;
         }
 
-        // 只列出文件夹
+        // 获取所有文件夹（班级）
         File[] classes = classDir.listFiles(File::isDirectory);
 
         if (classes != null && classes.length > 0) {
+            // 构建表格数据
             String[][] data = new String[classes.length][2];
             for (int i = 0; i < classes.length; i++) {
-                data[i][0] = String.valueOf(i + 1);
-                data[i][1] = classes[i].getName(); // 直接使用文件夹名称
+                data[i][0] = String.valueOf(i + 1);          // 序号
+                data[i][1] = classes[i].getName();           // 班级名称
             }
             DefaultTableModel tableModel = new DefaultTableModel(data, headers);
             classTable.setModel(tableModel);
         } else {
-            // 如果没有班级，显示空表格
+            // 没有班级时显示空表格
             DefaultTableModel tableModel = new DefaultTableModel(new String[0][0], headers);
             classTable.setModel(tableModel);
         }
     }
 
-    // 添加递归删除目录的方法
+    /**
+     * 递归删除目录及其内容
+     * @param directory 要删除的目录
+     * @return 删除是否成功
+     */
     private boolean deleteDirectory(File directory) {
         if (directory.exists()) {
             File[] files = directory.listFiles();
             if (files != null) {
                 for (File file : files) {
                     if (file.isDirectory()) {
-                        deleteDirectory(file);
+                        deleteDirectory(file);    // 递归删除子目录
                     } else {
-                        file.delete();
+                        file.delete();           // 删除文件
                     }
                 }
             }
         }
-        return directory.delete();
+        return directory.delete();               // 删除空目录
     }
 }

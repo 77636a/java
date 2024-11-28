@@ -13,25 +13,36 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * 学生列表面板类
+ * 用于显示、修改和删除学生信息
+ * 继承自JPanel，提供图形化界面
+ */
 public class StudentListPanel extends JPanel {
+    // 表格列头定义
     String[] headers = {"学号", "姓名", "小组"};
-    JTable studentTable;
-    JTextField txtId = new JTextField();
-    JTextField txtName = new JTextField();
-    JComboBox<String> cmbGroup = new JComboBox<>();
-    JButton btnEdit = new JButton("修改");
-    JButton btnDelete = new JButton("删除");
+    // 界面组件声明
+    JTable studentTable;                     // 学生信息表格
+    JTextField txtId = new JTextField();     // 学号输入框
+    JTextField txtName = new JTextField();   // 姓名输入框
+    JComboBox<String> cmbGroup = new JComboBox<>();  // 小组选择下拉框
+    JButton btnEdit = new JButton("修改");   // 修改按钮
+    JButton btnDelete = new JButton("删除"); // 删除按钮
 
+    /**
+     * 构造方法：初始化学生列表面板的界面组件
+     */
     public StudentListPanel() {
+        // 设置面板边框和布局
         this.setBorder(new TitledBorder(new EtchedBorder(), "学生列表"));
         this.setLayout(new BorderLayout());
 
-        // 初始化表格
+        // 初始化表格，设置为不可编辑
         DefaultTableModel tableModel = new DefaultTableModel(new String[0][0], headers);
         studentTable = new JTable(tableModel) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false;
+                return false;  // 设置表格不可直接编辑
             }
         };
         studentTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -81,6 +92,10 @@ public class StudentListPanel extends JPanel {
         });
     }
 
+    /**
+     * 加载小组列表
+     * 从文件系统读取所有小组信息并添加到下拉框中
+     */
     private void loadGroups() {
         cmbGroup.removeAllItems();
         cmbGroup.addItem("请选择小组");
@@ -100,6 +115,10 @@ public class StudentListPanel extends JPanel {
         }
     }
 
+    /**
+     * 更新学生列表显示
+     * 从文件系统读取所有学生信息并显示在表格中
+     */
     private void updateStudentList() {
         if (Constant.CLASS_PATH == null || Constant.CLASS_PATH.isEmpty()) {
             return;
@@ -141,6 +160,10 @@ public class StudentListPanel extends JPanel {
         studentTable.setModel(model);
     }
 
+    /**
+     * 验证并修改学生信息
+     * @return 修改是否成功
+     */
     private boolean validateAndEdit() {
         int selectedRow = studentTable.getSelectedRow();
         if (selectedRow < 0) {

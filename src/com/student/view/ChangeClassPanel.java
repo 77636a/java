@@ -1,7 +1,6 @@
 package com.student.view;
 
 import com.student.util.Constant;
-
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
@@ -22,21 +21,13 @@ public class ChangeClassPanel extends JScrollPane {
         this.setViewportView(contentPanel);
         
         File classDir = new File(Constant.FILE_PATH);
-        System.out.println("读取目录：" + classDir.getAbsolutePath());
         
         if (!classDir.exists()) {
             classDir.mkdirs();
         }
         
-        // 添加调试信息
-        File[] files = classDir.listFiles(File::isDirectory);
-        System.out.println("找到的班级文件夹数量：" + (files != null ? files.length : 0));
-        if (files != null) {
-            for (File file : files) {
-                System.out.println("发现班级文件夹：" + file.getName());
-            }
-        }
         
+        File[] files = classDir.listFiles(File::isDirectory);
         if (files == null || files.length == 0) {
             JOptionPane.showMessageDialog(this, "请先创建班级", "", JOptionPane.INFORMATION_MESSAGE);
         } else {
@@ -55,8 +46,6 @@ public class ChangeClassPanel extends JScrollPane {
                 
                 // 更新最大宽度
                 maxWidth = Math.max(maxWidth, 200);
-                
-                System.out.println("创建单选按钮：" + className + " 位置：" + y + (count * 40));
                 
                 // 如果是当前班级，设置为选中
                 if (className.equals(Constant.CLASS_PATH)) {
@@ -123,14 +112,7 @@ public class ChangeClassPanel extends JScrollPane {
             name.endsWith(".txt") && new File(dir, name).isFile()
         );
         
-        // 添加调试信息
-        System.out.println("学生文件夹路径：" + studentsDir.getAbsolutePath());
-        if (studentFiles != null) {
-            System.out.println("找到的学生文件数量：" + studentFiles.length);
-            for (File file : studentFiles) {
-                System.out.println("学生文件：" + file.getName());
-            }
-        }
+       
         
         return studentFiles != null ? studentFiles.length : 0;
     }

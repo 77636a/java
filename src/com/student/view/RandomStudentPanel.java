@@ -9,19 +9,30 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * 随机学生点名面板类
+ * 用于实现随机选择学生、显示照片、记录考勤等功能
+ * 继承自JPanel，提供图形化界面
+ */
 public class RandomStudentPanel extends JPanel {
-    private JLabel nameLabel;
-    private JTextField nameField;
-    private JLabel photoLabel;
-    private JButton randomButton;
-    private JButton absenceButton;
-    private JButton leaveButton;
-    private JButton answerButton;
-    private javax.swing.Timer timer;
-    private Random random = new Random();
-    private List<String[]> studentList = new ArrayList<>();
-    private boolean isRandomizing = false;
+    // 界面组件声明
+    private JLabel nameLabel;            // 学生姓名标签
+    private JTextField nameField;        // 学生姓名显示框
+    private JLabel photoLabel;           // 学生照片显示区域
+    private JButton randomButton;        // 随机选择按钮
+    private JButton absenceButton;       // 缺勤按钮
+    private JButton leaveButton;         // 请假按钮
+    private JButton answerButton;        // 答题按钮
 
+    // 功能相关成员变量
+    private Timer timer;                 // 随机效果定时器
+    private Random random = new Random(); // 随机数生成器
+    private List<String[]> studentList = new ArrayList<>(); // 学生信息列表
+    private boolean isRandomizing = false;  // 随机状态标志
+
+    /**
+     * 构造方法：初始化随机点名面板的界面组件
+     */
     public RandomStudentPanel() {
         this.setLayout(null);
         this.setBorder(new TitledBorder(new EtchedBorder(), "随机学生点名"));
@@ -57,20 +68,19 @@ public class RandomStudentPanel extends JPanel {
         this.add(leaveButton);
         this.add(answerButton);
 
-        // 初始化定时器
-        timer = new javax.swing.Timer(50, e -> {
+        // 初始化定时器，实现随机效果
+        timer = new Timer(50, e -> {
             if (studentList.isEmpty()) {
                 stopRandomizing();
                 return;
             }
+            // 随机选择并显示学生信息
             String[] randomStudent = studentList.get(random.nextInt(studentList.size()));
             nameField.setText(randomStudent[1]); // 显示学生姓名
-            
-            // 显示照片
-            displayPhoto(randomStudent[2]);
+            displayPhoto(randomStudent[2]);      // 显示学生照片
         });
 
-        // 随机按钮事件
+        // 事件监听器设置
         randomButton.addActionListener(e -> {
             if (!isRandomizing) {
                 startRandomizing();
@@ -98,6 +108,10 @@ public class RandomStudentPanel extends JPanel {
         loadStudentList();
     }
 
+    /**
+     * 加载学生列表
+     * 从文件系统读取所有学生信息，包括学号、姓名和照片路径
+     */
     private void loadStudentList() {
         studentList.clear();
         if (Constant.CLASS_PATH == null || Constant.CLASS_PATH.isEmpty()) {
@@ -138,9 +152,14 @@ public class RandomStudentPanel extends JPanel {
         }
     }
 
+    /**
+     * 开始随机选择
+     * 启动定时器，实现随机效果
+     */
     private void startRandomizing() {
         if (studentList.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "没有可用的学生信息", "", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "没有可用的学生信息", "", 
+                JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         isRandomizing = true;
@@ -148,26 +167,37 @@ public class RandomStudentPanel extends JPanel {
         timer.start();
     }
 
+    /**
+     * 停止随机选择
+     * 停止定时器，显示最终选中的学生
+     */
     private void stopRandomizing() {
         isRandomizing = false;
         randomButton.setText("随机学生");
         timer.stop();
     }
 
+    /**
+     * 记录学生状态
+     * @param status 状态类型（缺勤/请假/答题）
+     * 将学生状态信息保存到文件中
+     */
     private void recordStatus(String status) {
         String currentStudent = nameField.getText();
         if (currentStudent.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "请先随机选择学生", "", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "请先随机选择学生", "", 
+                JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        // 记录学生状态到文件
+        // 创建状态记录文件
         try {
             File statusDir = new File(Constant.FILE_PATH + Constant.CLASS_PATH + "/status");
             if (!statusDir.exists()) {
                 statusDir.mkdirs();
             }
 
+            // 使用时间戳作为文件名，记录状态信息
             File statusFile = new File(statusDir, new Date().getTime() + ".txt");
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(statusFile))) {
                 writer.write("学生：" + currentStudent);
@@ -177,6 +207,7 @@ public class RandomStudentPanel extends JPanel {
                 writer.write("时间：" + new Date());
             }
 
+            // 记录成功后清空显示
             JOptionPane.showMessageDialog(this, "记录成功", "", JOptionPane.INFORMATION_MESSAGE);
             nameField.setText("");
             photoLabel.setIcon(null);
@@ -188,10 +219,15 @@ public class RandomStudentPanel extends JPanel {
         }
     }
 
-    // 添加显示照片的方法
+    /**
+     * 显示学生照片
+     * @param photoPath 照片文件路径
+     * 加载并调整照片大小以适应显示区域
+     */
     private void displayPhoto(String photoPath) {
         if (photoPath != null && !photoPath.isEmpty()) {
             try {
+                // 加载并缩放图片
                 ImageIcon imageIcon = new ImageIcon(photoPath);
                 // 调整图片大小以适应标签
                 Image image = imageIcon.getImage();
